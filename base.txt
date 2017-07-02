@@ -1,0 +1,175 @@
+/*==============================================================*/
+/* Table: CLIENTE                                               */
+/*==============================================================*/
+create table CLIENTE (
+   CEDULACLIENTE        varchar(10)          not null,
+   NOMBRE               varchar(50)          not null,
+   DIRECCION            varchar(50)          not null,
+   TELEFONO             varchar(10)          not null,
+   constraint PK_CLIENTE primary key nonclustered (CEDULACLIENTE)
+)
+go
+
+/*==============================================================*/
+/* Table: DETALLE_VENTA                                         */
+/*==============================================================*/
+create table DETALLE_VENTA (
+   IDDETALLE            int IDENTITY(1,1)    not null,
+   IDVENTA              int                  null,
+   CODIGO               varchar(20)          null,
+   CANTIDAD             int                  not null,
+   SUBTOTAL             money                not null,
+   constraint PK_DETALLE_VENTA primary key nonclustered (IDDETALLE)
+)
+go
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_5_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_5_FK on DETALLE_VENTA (
+IDVENTA ASC
+)
+go
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_6_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_6_FK on DETALLE_VENTA (
+CODIGO ASC
+)
+go
+
+/*==============================================================*/
+/* Table: PRODUCTO                                              */
+/*==============================================================*/
+create table PRODUCTO (
+   CODIGO               varchar(20)          not null,
+   CEDULAPROVEEDOR      varchar(10)          null,
+   NOMBRE               varchar(50)          not null,
+   STOCK                int                  not null,
+   FECHAVENCIMIENTO     date                 not null,
+   PRECIO               money                not null,
+   constraint PK_PRODUCTO primary key nonclustered (CODIGO)
+)
+go
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_7_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_7_FK on PRODUCTO (
+CEDULAPROVEEDOR ASC
+)
+go
+
+/*==============================================================*/
+/* Table: PROVEEDOR                                             */
+/*==============================================================*/
+create table PROVEEDOR (
+   CEDULAPROVEEDOR      varchar(10)          not null,
+   NOMBRE               varchar(50)          not null,
+   DIRECCION            varchar(50)          not null,
+   TELEFONO             varchar(10)          not null,
+   CIUDAD               varchar(20)          not null,
+   EMAIL                varchar(50)          not null,
+   constraint PK_PROVEEDOR primary key nonclustered (CEDULAPROVEEDOR)
+)
+go
+
+/*==============================================================*/
+/* Table: RELATIONSHIP_8                                        */
+/*==============================================================*/
+create table USUARIO_ROL (
+   NOMBREUSUARIO        varchar(50)          not null,
+   IDROL                int                  not null,
+   FECHACREACIONUSUARIO datetime             not null,
+   constraint PK_RELATIONSHIP_8 primary key nonclustered (NOMBREUSUARIO, IDROL)
+)
+go
+
+
+/*==============================================================*/
+/* Table: ROL                                                   */
+/*==============================================================*/
+create table ROL (
+   IDROL                int IDENTITY(1,1)    not null,
+   NOMBREROL            varchar(50)          not null,
+   constraint PK_ROL primary key nonclustered (IDROL)
+)
+go
+
+/*==============================================================*/
+/* Table: USUARIO                                               */
+/*==============================================================*/
+create table USUARIO (
+   NOMBREUSUARIO        varchar(50)          not null,
+   CONTRASENA           varchar(50)          not null,
+   NOMBREREALUSUARIO    varchar(50)          not null,
+   constraint PK_USUARIO primary key nonclustered (NOMBREUSUARIO)
+)
+go
+
+/*==============================================================*/
+/* Table: VENTA                                                 */
+/*==============================================================*/
+create table VENTA (
+   IDVENTA              int IDENTITY(1,1)    not null,
+   NOMBREUSUARIO        varchar(50)          null,
+   CEDULACLIENTE        varchar(10)          null,
+   FECHAEMISION         date                 not null,
+   IVA                  money                not null,
+   SUBTOTAL             money                not null,
+   constraint PK_VENTA primary key nonclustered (IDVENTA)
+)
+go
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_3_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_3_FK on VENTA (
+NOMBREUSUARIO ASC
+)
+go
+
+/*==============================================================*/
+/* Index: RELATIONSHIP_4_FK                                     */
+/*==============================================================*/
+create index RELATIONSHIP_4_FK on VENTA (
+CEDULACLIENTE ASC
+)
+go
+
+alter table DETALLE_VENTA
+   add constraint FK_DETALLE__RELATIONS_VENTA foreign key (IDVENTA)
+      references VENTA (IDVENTA)
+go
+
+alter table DETALLE_VENTA
+   add constraint FK_DETALLE__RELATIONS_PRODUCTO foreign key (CODIGO)
+      references PRODUCTO (CODIGO)
+go
+
+alter table PRODUCTO
+   add constraint FK_PRODUCTO_RELATIONS_PROVEEDO foreign key (CEDULAPROVEEDOR)
+      references PROVEEDOR (CEDULAPROVEEDOR)
+go
+
+alter table USUARIO_ROL
+   add constraint FK_RELATION_RELATIONS_USUARIO foreign key (NOMBREUSUARIO)
+      references USUARIO (NOMBREUSUARIO)
+go
+
+alter table USUARIO_ROL
+   add constraint FK_RELATION_RELATIONS_ROL foreign key (IDROL)
+      references ROL (IDROL)
+go
+
+alter table VENTA
+   add constraint FK_VENTA_RELATIONS_USUARIO foreign key (NOMBREUSUARIO)
+      references USUARIO (NOMBREUSUARIO)
+go
+
+alter table VENTA
+   add constraint FK_VENTA_RELATIONS_CLIENTE foreign key (CEDULACLIENTE)
+      references CLIENTE (CEDULACLIENTE)
+go
+
